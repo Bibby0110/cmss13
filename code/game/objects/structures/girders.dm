@@ -178,22 +178,17 @@
 			return do_reinforced_wall(W, user)
 		if(STATE_DISPLACED)
 			if(HAS_TRAIT(W, TRAIT_TOOL_CROWBAR))
-				var/area/area = get_area(W)
-				if(!area.allow_construction)
-					to_chat(user, SPAN_WARNING("The girder must be secured on a proper surface!"))
-					return
-				var/turf/open/floor = loc
-				if(!floor.allow_construction)
-					to_chat(user, SPAN_WARNING("The girder must be secured on a proper surface!"))
-					return
-				var/obj/structure/tunnel/tunnel = locate(/obj/structure/tunnel) in loc
-				if(tunnel)
-					to_chat(user, SPAN_WARNING("The girder cannot be secured on a tunnel!"))
-					return
+				if(!can_displace())
+					return FALSE
+
 				playsound(loc, 'sound/items/Crowbar.ogg', 25, 1)
 				to_chat(user, SPAN_NOTICE("Now securing the girder..."))
 				if(!do_after(user, 4 SECONDS * user.get_skill_duration_multiplier(SKILL_CONSTRUCTION), INTERRUPT_ALL|BEHAVIOR_IMMOBILE, BUSY_ICON_BUILD))
 					return TRUE
+
+				if(!can_displace())
+					return FALSE
+
 				to_chat(user, SPAN_NOTICE("You secured the girder!"))
 				anchored = TRUE
 				state = STATE_STANDARD
@@ -201,6 +196,21 @@
 				update_icon()
 				return TRUE
 	return FALSE
+
+/obj/structure/girder/proc/can_displace()
+	var/area/area = get_area(W)
+	if(!area.allow_construction)
+		to_chat(user, SPAN_WARNING("The girder must be secured on a proper surface!"))
+		return FALSE
+	var/turf/open/floor = loc
+	if(!floor.allow_construction)
+		to_chat(user, SPAN_WARNING("The girder must be secured on a proper surface!"))
+		return FALSE
+	var/obj/structure/tunnel/tunnel = locate(/obj/structure/tunnel) in loc
+	if(tunnel)
+		to_chat(user, SPAN_WARNING("The girder cannot be secured on a tunnel!"))
+		return FALSE
+	return TRUE
 
 /obj/structure/girder/proc/do_dismantle(obj/item/W, mob/user)
 	if(!(state == STATE_DISMANTLING))
