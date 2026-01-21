@@ -73,6 +73,13 @@
 	var/node_plant_plasma_cost = 300
 	var/turf_build_cooldown = 10 SECONDS
 
+/datum/action/xeno_action/activable/minion_build_order
+	name = "Minion Build Order (50)"
+	action_icon_state = "secrete_resin"
+	plasma_cost = 50
+	action_type = XENO_ACTION_CLICK
+	xeno_cooldown = 0.5 SECONDS
+
 /datum/action/xeno_action/onclick/manage_hive
 	name = "Manage The Hive"
 	action_icon_state = "xeno_readmit"

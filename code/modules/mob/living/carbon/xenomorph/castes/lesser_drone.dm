@@ -127,3 +127,33 @@
 /datum/behavior_delegate/lesser_drone_base/on_life()
 	if(bound_xeno.body_position == STANDING_UP && !(locate(/obj/effect/alien/weeds) in get_turf(bound_xeno)))
 		bound_xeno.adjustBruteLoss(5)
+
+
+#define XENO_AI_IDLE 0
+#define XENO_AI_WORKING 1
+
+/mob/living/carbon/xenomorph/lesser_drone/ai
+	var/ai_state = XENO_AI_IDLE
+	var/datum/ai_job/current_job = null
+	var/automated_actions = list(
+		"BUILD" = /datum/action/xeno_action/activable/secrete_resin
+	)
+
+/mob/living/carbon/xenomorph/lesser_drone/ai/Life(delta_time)
+	. = ..()
+	switch(ai_state)
+		if(XENO_AI_IDLE)
+			get_job()
+			return
+		if(XENO_AI_WORKING)
+			current_job.perform_job()
+			message_admins("did job")
+			return
+
+/mob/living/carbon/xenomorph/lesser_drone/ai/proc/get_job()
+	var/datum/ai_job/available_job = hive.ai_controller.get_job()
+	if(!available_job)
+		return
+	available_job.worker = src
+	current_job = available_job
+	ai_state = XENO_AI_WORKING

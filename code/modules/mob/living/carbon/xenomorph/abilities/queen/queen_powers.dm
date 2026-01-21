@@ -1015,3 +1015,37 @@
 	// We don't test or apply the cooldown here because the proc does it since verbs can activate it too
 	xeno.hive_message()
 	return ..()
+
+
+/datum/action/xeno_action/activable/minion_build_order/use_ability(atom/target_atom, mods)
+	. = ..()
+	if(!locate(/obj/effect/alien/weeds) in get_turf(owner))
+		to_chat(owner, SPAN_XENONOTICE("We must be standing on weeds to establish a connection to the resin."))
+		return
+
+	if(!action_cooldown_check())
+		return
+
+	if(mods[CLICK_CATCHER])
+		return
+
+	var/turf/target_turf = get_turf(target_atom)
+	if(!target_turf)
+		return
+
+	var/mob/living/carbon/xenomorph/queen = owner
+	if(!..())
+		return
+
+	var/datum/resin_construction/resing_construction = /datum/resin_construction/resin_turf/wall
+
+	to_chat(owner, SPAN_XENONOTICE("We order a minion to build \a [resing_construction.construction_name]."))
+	playsound(target_turf, "alien_resin_build", 25)
+
+	var/datum/ai_job/build_structure/build_job = new()
+	build_job.structure_type = resing_construction
+	build_job.target_turf = target_turf
+
+	queen.hive.ai_controller.add_job(build_job)
+
+	return TRUE

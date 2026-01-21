@@ -174,6 +174,9 @@
 	/// Has a King hatchery
 	var/has_hatchery = FALSE
 
+	/// Our AI controller for Queen minions
+	var/datum/xenomorph_ai_controller/ai_controller
+
 /datum/hive_status/New()
 	hive_ui = new(src)
 	mark_ui = new(src)
@@ -197,6 +200,8 @@
 	RegisterSignal(SSdcs, COMSIG_GLOB_POST_SETUP, PROC_REF(post_setup))
 
 	setup_banned_allies()
+
+	ai_controller = new()
 
 ///Generate the image()'s requried for the evolution radial menu.
 /datum/hive_status/proc/generate_evo_menu_images()
