@@ -53,6 +53,8 @@
 		JOB_SQUAD_TEAM_LEADER = 2,
 		JOB_SQUAD_LEADER = 1,
 	)
+	/// Roles that can only join this squad through CIC transfers (ASS future proofing)
+	var/list/transfer_only_roles = list()
 	/// Squad roles actual number of players list
 	var/list/roles_in = list()
 	/// Squad headsets default radio frequency
@@ -581,6 +583,13 @@
 
 	return targets_to_garble
 
+/datum/squad/proc/get_joinable_role_slots(role, skip_limit = FALSE)
+	if(role in transfer_only_roles)
+		return 0
+	if(skip_limit || isnull(roles_cap[role]))
+		return null
+	return max(0, roles_cap[role] - roles_in[role])
+
 //Straight-up insert a marine into a squad.
 //This sets their ID, increments the total count, and so on. Everything else is done in job_controller.dm.
 //So it does not check if the squad is too full already, or randomize it, etc.
@@ -811,7 +820,7 @@
 					var/datum/job/job = GLOB.RoleAuthority.roles_for_mode[GET_DEFAULT_ROLE(old_lead.job)]
 					old_lead.comm_title = job.gear_preset.role_comm_title
 			if(GET_DEFAULT_ROLE(old_lead.job) != JOB_SQUAD_LEADER || !leader_killed)
-				var/obj/item/device/radio/headset/almayer/marine/headset = old_lead.get_type_in_ears(/obj/item/device/radio/headset/almayer/marine)
+				var/obj/item/device/radio/headset/almayer/marine/headset = old_lead.get_type_in_ears(/obj/item/device/radio/headset/almayer)
 				if(headset)
 					for(var/obj/item/device/encryptionkey/squadlead/acting/key in headset.keys)
 						headset.keys -= key

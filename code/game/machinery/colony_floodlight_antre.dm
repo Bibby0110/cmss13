@@ -38,7 +38,7 @@
 
 /obj/structure/machinery/colony_floodlight_switch/antre/attack_hand(mob/user as mob)
 	if(damaged)
-		to_chat(user, "The [src] is broken!")
+		to_chat(user, "[src] is broken!")
 		return FALSE
 	if(!ishuman(user))
 		to_chat(user, "Nice try.")
@@ -76,14 +76,7 @@
 
 /obj/structure/machinery/colony_floodlight/industrial
 	name = "industrial floodlight"
-	icon_state = "flood_yellow_off"
+	icon_state = "flood_yellow_mapping"
 	health = 200
 	lum_value = 10
-
-/obj/structure/machinery/colony_floodlight/industrial/update_icon()
-	if(damaged)
-		icon_state = "flood_yellow_dmg"
-	else if(is_on)
-		icon_state = "flood_yellow_on"
-	else
-		icon_state = "flood_yellow_off"
+	icon_key = "flood_yellow"
